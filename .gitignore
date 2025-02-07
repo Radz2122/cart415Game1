@@ -1,0 +1,42 @@
+# Unity generated folders
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Bb]uild/
+[Bb]uilds/
+[Ll]ogs/
+[Uu]ser[Ss]ettings/
+
+# Auto-generated VS/JetBrains files
+*.csproj
+*.sln
+*.suo
+*.vscode
+*.user
+*.unityproj
+*.pidb
+*.booproj
+*.svd
+*.pdb
+*.ilk
+*.exp
+*.exe
+*.app
+*.idb
+
+# Unity metadata files
+*.meta
+
+# Play mode and Editor-only settings
+[Aa]ssets/Scenes/*.unity
+[Aa]ssets/Scenes/*.unity.meta
+[Pp]roject[Ss]ettings/
+[Pp]ackages/
+
+# Logs, crash dumps
+*.log
+*.tlog
+*.stackdump
+
+# Unity Collaborate (if not using)
+[Cc]ollab/

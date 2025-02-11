@@ -25,6 +25,15 @@ public class HotAirBalloonController : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         rb.gravityScale = 0; // We handle gravity manually
+
+        // Ensure fuel bar starts full
+        if (fuelBar != null)
+        {
+            fuelBar.minValue = 0; // Ensure min value is set
+            fuelBar.maxValue = fuel; // Set max value to match initial fuel
+            fuelBar.value = fuel; // Start full
+        }
+
         UpdateFuelUI();
     }
 
@@ -65,7 +74,7 @@ public class HotAirBalloonController : MonoBehaviour
     {
         if (fuelBar != null)
         {
-            fuelBar.value = Mathf.Max(fuel, 0); // Update UI bar to match fuel level
+            fuelBar.value = Mathf.Clamp(fuel, 0, fuelBar.maxValue); // Ensure it stays within valid range
         }
     }
 }

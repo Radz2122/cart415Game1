@@ -24,9 +24,11 @@ public class HotAirBalloonController : MonoBehaviour
 
     private Rigidbody2D rb;
     private float swayTimer;
-    
+
     private bool canTakeDamage = true; // 🔹 Prevents rapid damage
     public float damageCooldown = 2f; // 🔹 Time before player can take damage again
+
+    public GameObject gameOverUI; // 🔹 Assign the Game Over panel in the Inspector
 
     void Start()
     {
@@ -43,6 +45,10 @@ public class HotAirBalloonController : MonoBehaviour
         }
 
         UpdateFuelUI();
+
+        // 🔹 Hide Game Over UI at the start
+        if (gameOverUI != null)
+            gameOverUI.SetActive(false);
     }
 
     void Update()
@@ -121,6 +127,19 @@ public class HotAirBalloonController : MonoBehaviour
 
     void GameOver()
     {
-        Debug.Log("Game Over!");
+        Debug.Log("Game Over!"); // ✅ This should appear in Console
+
+        if (gameOverUI != null)
+        {
+            gameOverUI.SetActive(true); // ✅ Show the Game Over panel
+            Time.timeScale = 0; // ✅ Pause the game
+        }
+    }
+
+    // 🔹 Function to Restart Game (Attach to Restart Button)
+    public void RestartGame()
+    {
+        Time.timeScale = 1; // ✅ Resume game
+        UnityEngine.SceneManagement.SceneManager.LoadScene(UnityEngine.SceneManagement.SceneManager.GetActiveScene().buildIndex);
     }
 }

@@ -25,10 +25,10 @@ public class HotAirBalloonController : MonoBehaviour
     private Rigidbody2D rb;
     private float swayTimer;
 
-    private bool canTakeDamage = true; // 🔹 Prevents rapid damage
-    public float damageCooldown = 2f; // 🔹 Time before player can take damage again
+    private bool canTakeDamage = true; //  Prevents rapid damage
+    public float damageCooldown = 2f; //  Time before player can take damage again
 
-    public GameObject gameOverUI; // 🔹 Assign the Game Over panel in the Inspector
+    public GameObject gameOverUI; //  Assign the Game Over panel in the Inspector
 
     void Start()
     {
@@ -46,7 +46,7 @@ public class HotAirBalloonController : MonoBehaviour
 
         UpdateFuelUI();
 
-        // 🔹 Hide Game Over UI at the start
+        //  Hide Game Over UI at the start
         if (gameOverUI != null)
             gameOverUI.SetActive(false);
     }
@@ -91,6 +91,7 @@ public class HotAirBalloonController : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Obstacle") && canTakeDamage)
         {
+            Camera.main.GetComponent<CameraShake>().Shake(); // Trigger shake
             TakeDamage();
         }
     }
@@ -101,7 +102,7 @@ public class HotAirBalloonController : MonoBehaviour
         {
             currentHearts--;
             UpdateHeartsUI();
-            StartCoroutine(DamageCooldown()); // 🔹 Start cooldown timer
+            StartCoroutine(DamageCooldown()); //  Start cooldown timer
         }
 
         if (currentHearts <= 0)
@@ -112,9 +113,9 @@ public class HotAirBalloonController : MonoBehaviour
 
     IEnumerator DamageCooldown()
     {
-        canTakeDamage = false; // 🔹 Prevents further damage
-        yield return new WaitForSeconds(damageCooldown); // 🔹 Wait for cooldown time
-        canTakeDamage = true; // 🔹 Allows damage again
+        canTakeDamage = false; //  Prevents further damage
+        yield return new WaitForSeconds(damageCooldown); //  Wait for cooldown time
+        canTakeDamage = true; // Allows damage again
     }
 
     void UpdateHeartsUI()
@@ -127,19 +128,19 @@ public class HotAirBalloonController : MonoBehaviour
 
     void GameOver()
     {
-        Debug.Log("Game Over!"); // ✅ This should appear in Console
+        Debug.Log("Game Over!"); 
 
         if (gameOverUI != null)
         {
-            gameOverUI.SetActive(true); // ✅ Show the Game Over panel
-            Time.timeScale = 0; // ✅ Pause the game
+            gameOverUI.SetActive(true); // Show the Game Over panel
+            Time.timeScale = 0; //  Pause the game
         }
     }
 
-    // 🔹 Function to Restart Game (Attach to Restart Button)
+    //  Function to Restart Game 
     public void RestartGame()
     {
-        Time.timeScale = 1; // ✅ Resume game
+        Time.timeScale = 1; //  Resume game
         UnityEngine.SceneManagement.SceneManager.LoadScene(UnityEngine.SceneManagement.SceneManager.GetActiveScene().buildIndex);
     }
 }

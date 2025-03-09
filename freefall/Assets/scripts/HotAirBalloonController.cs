@@ -37,6 +37,10 @@ public class HotAirBalloonController : MonoBehaviour
     private bool inTornado = false;
     public GameObject loseScreenUI; // Assign in Inspector
 
+    public AudioSource collisionSound;
+public AudioSource jumpSound;
+public AudioSource tornadoSound;
+
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -55,13 +59,25 @@ public class HotAirBalloonController : MonoBehaviour
         UpdateFuelUI();
 
         if (restartButton != null)
-            restartButton.gameObject.SetActive(false); // ✅ Correct: Enables the Button's GameObject
+            restartButton.gameObject.SetActive(false); //  Enables the Button's GameObject
 
 
         if (loseScreenUI != null)
             loseScreenUI.SetActive(false); // Hide win screen at start
 
-          Time.timeScale = 1; // ✅ Ensure game starts unpaused
+          Time.timeScale = 1; //  Ensure game starts unpaused
+
+           //  Ensure AudioSources are assigned
+    if (collisionSound == null || jumpSound == null || tornadoSound == null)
+    {
+        AudioSource[] audioSources = GetComponents<AudioSource>();
+        if (audioSources.Length >= 3)
+        {
+            collisionSound = audioSources[0];
+            jumpSound = audioSources[1];
+            tornadoSound = audioSources[2];
+        }
+    }
     }
 
     void Update()
@@ -77,6 +93,10 @@ public class HotAirBalloonController : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Space) && fuel > 0)
         {
+            if (jumpSound != null)
+        {
+            jumpSound.Play(); //  Play jump sound
+        }
             rb.velocity = new Vector2(rb.velocity.x, 0);
             rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
             fuel -= fuelConsumption;
@@ -105,6 +125,10 @@ public class HotAirBalloonController : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Obstacle") && canTakeDamage)
         {
+              if (collisionSound != null)
+        {
+            collisionSound.Play(); //  Play collision sound
+        }
             TakeDamage();
         }
     }
@@ -113,6 +137,10 @@ public class HotAirBalloonController : MonoBehaviour
     {
         if (other.CompareTag("Tornado")) // Ensure the tornado has this tag
         {
+            if (tornadoSound != null)
+        {
+            tornadoSound.Play(); //  Play tornado sound
+        }
             StartCoroutine(ApplyTornadoEffect());
         }
     }

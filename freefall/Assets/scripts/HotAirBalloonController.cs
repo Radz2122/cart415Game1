@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement; 
 
 public class HotAirBalloonController : MonoBehaviour
 {
@@ -28,18 +29,20 @@ public class HotAirBalloonController : MonoBehaviour
     private bool canTakeDamage = true; // Prevents rapid damage
     public float damageCooldown = 2f; // Time before player can take damage again
 
-    public GameObject gameOverUI; // Assign the Game Over panel in the Inspector
+    public Button restartButton; // Assign the Game Over panel in the Inspector
 
     // Tornado Effect
     public float tornadoSpeedBoost = 3f; // 🔹 Additional downward speed inside tornado
     public float tornadoEffectDuration = 1f; // 🔹 Duration inside tornado
     private bool inTornado = false;
+    public GameObject loseScreenUI; // Assign in Inspector
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         rb.gravityScale = 0;
         currentHearts = maxHearts;
+      
         UpdateHeartsUI();
 
         if (fuelBar != null)
@@ -51,8 +54,14 @@ public class HotAirBalloonController : MonoBehaviour
 
         UpdateFuelUI();
 
-        if (gameOverUI != null)
-            gameOverUI.SetActive(false);
+        if (restartButton != null)
+            restartButton.gameObject.SetActive(false); // ✅ Correct: Enables the Button's GameObject
+
+
+        if (loseScreenUI != null)
+            loseScreenUI.SetActive(false); // Hide win screen at start
+
+          Time.timeScale = 1; // ✅ Ensure game starts unpaused
     }
 
     void Update()
@@ -159,20 +168,38 @@ public class HotAirBalloonController : MonoBehaviour
         }
     }
 
-    void GameOver()
+void GameOver()
+{
+    Debug.Log("Game Over!");
+    if (loseScreenUI != null)
     {
-        Debug.Log("Game Over!");
-
-        if (gameOverUI != null)
-        {
-            gameOverUI.SetActive(true);
-            Time.timeScale = 0;
-        }
+        loseScreenUI.SetActive(true);
     }
 
-    public void RestartGame()
+    if (restartButton != null)
     {
-        Time.timeScale = 1;
-        UnityEngine.SceneManagement.SceneManager.LoadScene(UnityEngine.SceneManagement.SceneManager.GetActiveScene().buildIndex);
+        restartButton.gameObject.SetActive(true); // ✅ Show button
+        restartButton.interactable = true; // ✅ Ensure it's clickable
+
+        restartButton.onClick.RemoveAllListeners(); // ✅ Remove any previous listeners
+        restartButton.onClick.AddListener(RestartGame); // ✅ Assign restart function once
+
+        Debug.Log("✅ Restart button is now active and assigned.");
     }
+
+    
+
+    Time.timeScale = 0; // ✅ Pause game
+}
+
+
+
+
+ public void RestartGame()
+{
+    Debug.Log("Restart button clicked! Restarting game...");
+    Time.timeScale = 1; // ✅ Ensure the game is unpaused before restarting
+    SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+}
+
 }

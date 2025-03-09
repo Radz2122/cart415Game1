@@ -25,10 +25,15 @@ public class HotAirBalloonController : MonoBehaviour
     private Rigidbody2D rb;
     private float swayTimer;
 
-    private bool canTakeDamage = true; //  Prevents rapid damage
-    public float damageCooldown = 2f; //  Time before player can take damage again
+    private bool canTakeDamage = true; // Prevents rapid damage
+    public float damageCooldown = 2f; // Time before player can take damage again
 
-    public GameObject gameOverUI; //  Assign the Game Over panel in the Inspector
+    public GameObject gameOverUI; // Assign the Game Over panel in the Inspector
+
+    // Tornado Effect
+    public float tornadoSpeedBoost = 3f; // 🔹 Additional downward speed inside tornado
+    public float tornadoEffectDuration = 1f; // 🔹 Duration inside tornado
+    private bool inTornado = false;
 
     void Start()
     {
@@ -46,14 +51,14 @@ public class HotAirBalloonController : MonoBehaviour
 
         UpdateFuelUI();
 
-        //  Hide Game Over UI at the start
         if (gameOverUI != null)
             gameOverUI.SetActive(false);
     }
 
     void Update()
     {
-        if (rb.velocity.y > maxFallSpeed)
+        // Apply normal downward force
+        if (rb.velocity.y > maxFallSpeed && !inTornado)
         {
             rb.AddForce(Vector2.down * gravityForce, ForceMode2D.Force);
         }
@@ -91,10 +96,38 @@ public class HotAirBalloonController : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Obstacle") && canTakeDamage)
         {
-            Camera.main.GetComponent<CameraShake>().Shake(); // Trigger shake
             TakeDamage();
         }
     }
+
+    void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.CompareTag("Tornado")) // Ensure the tornado has this tag
+        {
+            StartCoroutine(ApplyTornadoEffect());
+        }
+    }
+
+   IEnumerator ApplyTornadoEffect()
+{
+    inTornado = true;
+    float originalMoveSpeed = moveSpeed;
+
+    // 🔹 Increase move speed (horizontal movement)
+    moveSpeed += tornadoSpeedBoost;
+    
+    // 🔹 Instantly increase downward velocity (forces faster fall)
+    rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y - tornadoSpeedBoost);
+
+    yield return new WaitForSeconds(tornadoEffectDuration); // Wait for effect duration
+
+    // 🔹 Immediately restore original move speed & reset velocity
+    moveSpeed = originalMoveSpeed;
+    rb.velocity = new Vector2(rb.velocity.x, -gravityForce); // 🔹 Reset downward velocity
+
+    inTornado = false;
+}
+
 
     void TakeDamage()
     {
@@ -102,7 +135,7 @@ public class HotAirBalloonController : MonoBehaviour
         {
             currentHearts--;
             UpdateHeartsUI();
-            StartCoroutine(DamageCooldown()); //  Start cooldown timer
+            StartCoroutine(DamageCooldown());
         }
 
         if (currentHearts <= 0)
@@ -113,9 +146,9 @@ public class HotAirBalloonController : MonoBehaviour
 
     IEnumerator DamageCooldown()
     {
-        canTakeDamage = false; //  Prevents further damage
-        yield return new WaitForSeconds(damageCooldown); //  Wait for cooldown time
-        canTakeDamage = true; // Allows damage again
+        canTakeDamage = false;
+        yield return new WaitForSeconds(damageCooldown);
+        canTakeDamage = true;
     }
 
     void UpdateHeartsUI()
@@ -128,19 +161,18 @@ public class HotAirBalloonController : MonoBehaviour
 
     void GameOver()
     {
-        Debug.Log("Game Over!"); 
+        Debug.Log("Game Over!");
 
         if (gameOverUI != null)
         {
-            gameOverUI.SetActive(true); // Show the Game Over panel
-            Time.timeScale = 0; //  Pause the game
+            gameOverUI.SetActive(true);
+            Time.timeScale = 0;
         }
     }
 
-    //  Function to Restart Game 
     public void RestartGame()
     {
-        Time.timeScale = 1; //  Resume game
+        Time.timeScale = 1;
         UnityEngine.SceneManagement.SceneManager.LoadScene(UnityEngine.SceneManagement.SceneManager.GetActiveScene().buildIndex);
     }
 }

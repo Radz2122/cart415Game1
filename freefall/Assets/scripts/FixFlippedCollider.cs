@@ -59,7 +59,7 @@ public class FixFlippedCollider : MonoBehaviour
         UpdateCollider();
     }
 
-    // 🔹 BONUS: Auto-update collider in the Unity Editor when modifying flipX or flipY
+    //Auto-update collider in the Unity Editor when modifying flipX or flipY
 #if UNITY_EDITOR
     private void OnValidate()
     {

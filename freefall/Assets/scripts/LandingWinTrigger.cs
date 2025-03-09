@@ -34,23 +34,21 @@ public class LandingWinTrigger : MonoBehaviour
 
          if (restartButton != null)
     {
-        restartButton.gameObject.SetActive(true); // ✅ Show button
-        restartButton.interactable = true; // ✅ Ensure it's clickable
+        restartButton.gameObject.SetActive(true); //  Show button
+        restartButton.interactable = true; // Ensure it's clickable
 
-        restartButton.onClick.RemoveAllListeners(); // ✅ Remove any previous listeners
-        restartButton.onClick.AddListener(RestartGame); // ✅ Assign restart function once
-
-        Debug.Log("✅ Restart button is now active and assigned.");
+        restartButton.onClick.RemoveAllListeners(); // Remove any previous listeners
+        restartButton.onClick.AddListener(RestartGame); // Assign restart function once
     }
 
     }
 
-    // 🔹 Restart Game Function (Call this from UI Button)
+    //  Restart Game Function (Call this from UI Button)
    public void RestartGame()
 {
-     Debug.Log("Restart button clicked!");
-    Time.timeScale = 1; // ✅ Unpause game before restarting
-    SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex); // ✅ Reload current scene
+
+    Time.timeScale = 1; //  Unpause game before restarting
+    SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex); // Reload current scene
 }
 
 }

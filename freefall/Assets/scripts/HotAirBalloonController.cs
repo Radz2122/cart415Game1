@@ -32,14 +32,14 @@ public class HotAirBalloonController : MonoBehaviour
     public Button restartButton; // Assign the Game Over panel in the Inspector
 
     // Tornado Effect
-    public float tornadoSpeedBoost = 3f; // 🔹 Additional downward speed inside tornado
-    public float tornadoEffectDuration = 1f; // 🔹 Duration inside tornado
+    public float tornadoSpeedBoost = 3f; //  Additional downward speed inside tornado
+    public float tornadoEffectDuration = 1f; //  Duration inside tornado
     private bool inTornado = false;
     public GameObject loseScreenUI; // Assign in Inspector
 
     public AudioSource collisionSound;
-public AudioSource jumpSound;
-public AudioSource tornadoSound;
+    public AudioSource jumpSound;
+    public AudioSource tornadoSound;
 
     void Start()
     {
@@ -129,6 +129,17 @@ public AudioSource tornadoSound;
         {
             collisionSound.Play(); //  Play collision sound
         }
+        
+         CameraShake cameraShake = Camera.main.GetComponent<CameraShake>();
+        if (cameraShake != null)
+        {
+            StartCoroutine(cameraShake.Shake());
+        }
+        else
+        {
+            Debug.LogError(" CameraShake script is missing on Main Camera!");
+        }
+
             TakeDamage();
         }
     }
@@ -138,9 +149,9 @@ public AudioSource tornadoSound;
         if (other.CompareTag("Tornado")) // Ensure the tornado has this tag
         {
             if (tornadoSound != null)
-        {
-            tornadoSound.Play(); //  Play tornado sound
-        }
+            {
+                tornadoSound.Play(); //  Play tornado sound
+            }
             StartCoroutine(ApplyTornadoEffect());
         }
     }
@@ -150,17 +161,17 @@ public AudioSource tornadoSound;
     inTornado = true;
     float originalMoveSpeed = moveSpeed;
 
-    // 🔹 Increase move speed (horizontal movement)
+    //  Increase move speed (horizontal movement)
     moveSpeed += tornadoSpeedBoost;
     
-    // 🔹 Instantly increase downward velocity (forces faster fall)
+    //  Instantly increase downward velocity (forces faster fall)
     rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y - tornadoSpeedBoost);
 
     yield return new WaitForSeconds(tornadoEffectDuration); // Wait for effect duration
 
-    // 🔹 Immediately restore original move speed & reset velocity
+    //  Immediately restore original move speed & reset velocity
     moveSpeed = originalMoveSpeed;
-    rb.velocity = new Vector2(rb.velocity.x, -gravityForce); // 🔹 Reset downward velocity
+    rb.velocity = new Vector2(rb.velocity.x, -gravityForce); //  Reset downward velocity
 
     inTornado = false;
 }
@@ -199,35 +210,37 @@ public AudioSource tornadoSound;
 void GameOver()
 {
     Debug.Log("Game Over!");
+
+    //  Stop camera shake when game ends
+    CameraShake cameraShake = Camera.main.GetComponent<CameraShake>();
+    if (cameraShake != null)
+    {
+        StopAllCoroutines(); //  Stop all ongoing shakes
+        cameraShake.StopAllCoroutines(); //  Ensure shake stops
+        cameraShake.transform.position = cameraShake.transform.position; //  Reset camera position
+    }
+
+    if (restartButton != null)
+    {
+        restartButton.gameObject.SetActive(true);
+        restartButton.interactable = true;
+        restartButton.onClick.RemoveAllListeners();
+        restartButton.onClick.AddListener(RestartGame);
+    }
+
     if (loseScreenUI != null)
     {
         loseScreenUI.SetActive(true);
     }
 
-    if (restartButton != null)
-    {
-        restartButton.gameObject.SetActive(true); // ✅ Show button
-        restartButton.interactable = true; // ✅ Ensure it's clickable
-
-        restartButton.onClick.RemoveAllListeners(); // ✅ Remove any previous listeners
-        restartButton.onClick.AddListener(RestartGame); // ✅ Assign restart function once
-
-        Debug.Log("✅ Restart button is now active and assigned.");
-    }
-
-    
-
-    Time.timeScale = 0; // ✅ Pause game
+    Time.timeScale = 0; //  Pause the game
 }
-
-
-
 
  public void RestartGame()
-{
-    Debug.Log("Restart button clicked! Restarting game...");
-    Time.timeScale = 1; // ✅ Ensure the game is unpaused before restarting
-    SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-}
+    {
+        Debug.Log("Restart button clicked! Restarting game...");
+        Time.timeScale = 1; //  Ensure the game is unpaused before restarting
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
 
 }
